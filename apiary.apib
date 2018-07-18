@@ -1,0 +1,287 @@
+FORMAT: 1A
+HOST: http://localhost/ao/api/v1
+
+# AO API Documentation
+AO is a API allowing consumers to create orchestration workflow, schedule jobs
+
+
+# Allowed HTTPs requests:
+<pre>
+PUT     : To create resource 
+POST    : Update resource
+GET     : Get a resource or list of resources
+DELETE  : To delete resource
+</pre>
+
+# Description Of Usual Server Responses:
+- 200 `OK` - the request was successful (some API calls may return 201 instead).
+- 201 `Created` - the request was successful and a resource was created.
+- 204 `No Content` - the request was successful but there is no representation to return (i.e. the response is empty).
+- 400 `Bad Request` - the request could not be understood or was missing required parameters.
+- 401 `Unauthorized` - authentication failed or user doesn't have permissions for requested operation.
+- 403 `Forbidden` - access denied.
+- 404 `Not Found` - resource was not found.
+- 405 `Method Not Allowed` - requested method is not supported for resource.
+
+
+# Group PACKS
+Represents packs details. 
+
+---
+**User attributes:**
+- name `(String)` : unique identifier. 
+- source `(String)` : source of the pack. 
+- orchestrations `(String)` : First Name.
+- destination `(String)` : Last Name.
+
+---
+## Packs Collection [/packs]
+### List all packs [GET]
+Retrieve list of packs.
+
+
++ Response 200 (application/json)
+
+        [
+            {
+                "name": "Pack1",
+                "source": "Favourite programming language?",
+                "created_at": "2015-08-05T08:40:51.620Z",
+                "orchestrations": [
+                    "job control",
+                    "rundeck"
+                ],
+                "destination": "ABC",
+                "modified_at": "2015-08-05T08:40:51.620Z",
+                "created_by": "<sso_email>"                
+            },
+            {
+                "name": "Pack2",
+                "source": "Favourite programming language?",
+                "created_at": "2015-08-05T08:40:51.620Z",
+                "orchestrations": [
+                    "job control",
+                    "rundeck"
+                ],
+                "destination": "ABC",
+                "modified_at": "2015-08-05T08:40:51.620Z",
+                "created_by": "<sso_email>"                
+            }
+        ]
+
++ Response 401 (application/json)
+
+        {
+            "error": "error.unauthorized"
+        }
+
+### Create a Pack [POST]
+
+            
++ Request (application/json)
+    + Header
+
+            OAM_REMOTE_USER: user@user.com
+ 
+    + Body
+    
+        {
+            "source": "jira",
+            "orchestrations": [
+                "job control",
+                "rundeck"
+            ],
+            "destination": "ABC",
+            "name": "Pack1"
+            "email": "test@user.com"
+        }
+
++ Response 201 (application/json)
+    {
+            "name": "Pack1",
+            "source": "Favourite programming language?",
+            "created_at": "2015-08-05T08:40:51.620Z",
+            "orchestrations": [
+                "job control",
+                "rundeck"
+            ],
+            "destination": "ABC",
+            "modified_at": "2015-08-05T08:40:51.620Z",
+            "created_by": "<sso_email>"                
+    }
+
+## Packs [/packs/{name}]
+A single pack object with all its details
+
++ Parameters
+    + name (required, String, ``) ... Numeric `id` of the User to perform action with.
+
+### Retrieve a pack [GET]
++ Response 200 (application/json)
+
+    + Header
+
+            OAM_REMOTE_USER: user@user.com
+
+    + Body
+
+            {
+                "name": "Pack1",
+                "source": "Favourite programming language?",
+                "created_at": "2015-08-05T08:40:51.620Z",
+                "orchestrations": [
+                    "job control",
+                    "rundeck"
+                ],
+                "destination": "ABC",
+                "modified_at": "2015-08-05T08:40:51.620Z",
+                "created_by": "<sso_email>" 
+            }
+            
++ Response 401 (application/json)
+
+        {
+            "error": "error.unauthorized"
+        }
+
+### Update a pack [POST]
+Update pack details
++ Request (application/json)
+
+        {
+            "name": "Pack1",
+            "source": "Favourite programming language?",
+            "orchestrations": [
+                "job control"
+            ],
+            "destination": "destination"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "name": "Pack1",
+            "source": "Favourite programming language?",
+            "orchestrations": [
+                "job control"
+            ],
+            "destination": "destination",
+            "created_at": "2015-08-05T08:40:51.620Z",
+            "modified_at": "2015-08-05T08:40:51.620Z",
+            "created_by": "<sso_email>" 
+        }
+
++ Response 401 (application/json)
+
+        {
+            "error": "error.unauthorized"
+        }
+
+## CR Collection [/CR]
+
+### Create New CR [POST]
+
+You may create your own CR using this action. It takes a JSON
+object containing a cr detail.
+
++ Request (application/json)
+
+        {
+            "project": "project1 |  project 2 | ..",
+            "issue_type": "issue type 1",
+            "componenets": "ABC",
+            "summary": "cr summary",
+            "description": "cr description",
+            "environment": "environment",
+            "business_justification": "some justification",
+            "business_risk": "risk and impact",
+            "implementation_details": "",
+            "outage_type": "Hot-no service impact",
+            "tested": "yes|no"  
+            "exec_time": { "scheduled_start" : "<datetime>",
+                            "scheduled_end": "<datetime>"
+                            }
+            "orchestration_attachments": [] // required fields  file upload json {hostlist:[],pacname:"workflowid"}
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /cr/uuid
+
+    + Body
+
+            {
+                "project": "project1 |  project 2 | ..",
+                "issue_type": "issue type 1",
+                "componenets": "ABC",
+                "summary": "cr summary",
+                "description": "cr description",
+                "environment": "environment",
+                "business_justification": "some justification",
+                "business_risk": "risk and impact",
+                "implementation_details": "is this the attachment?? file upload json {hostlist:[],pacname:"workflowid"}",
+                "outage_type": "Hot-no service impact",
+                "outage_type": "Hot-no service impact",
+                "tested": "yes|no"  
+                "exec_time": { "scheduled_start" : "<datetime>",
+                                "scheduled_end": "<datetime>"
+                                },
+                created_at: "<datetime>",
+                updated_at: "<datetime>",
+                created_by: "<sso_email>"                       
+            }
+            
+
+### GET CR [GET]
+
++ Response 200 (application/json)
+
+        [
+                        {
+                "project": "project1 |  project 2 | ..",
+                "issue_type": "issue type 1",
+                "componenets": "ABC",
+                "summary": "cr summary",
+                "description": "cr description",
+                "environment": "environment",
+                "business_justification": "some justification",
+                "business_risk": "risk and impact",
+                "implementation_details": "is this the attachment?? file upload json {hostlist:[],pacname:"workflowid"}",
+                "outage_type": "Hot-no service impact",
+                "outage_type": "Hot-no service impact",
+                "tested": "yes|no"  
+                "exec_time": { "scheduled_start" : "<datetime>",
+                                "scheduled_end": "<datetime>"
+                                },
+                created_at: "<datetime>",
+                updated_at: "<datetime>",
+                created_by: "<sso_email>"                       
+            }
+        ]
+        
+## Jobs Collection [/Jobs]
+
+Toto:  look at AO41
+            
+            
+            /jobs/<crname>
+            /jobs/<crname>/<job_type NGD|JC|rundeck> 
+
++ Response 200 (application/json)
+
+        [
+            {
+                destinationId,
+                task_source_id,
+                task_source_type_id,
+                workflow_source_typ_id (job_type),
+                successful_count,
+                failed_count,
+                workflow_execution_state_id,
+                time_stamp                               
+            },
+            {
+            }
+        ]
